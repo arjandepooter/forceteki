@@ -5,11 +5,11 @@ import { AbilityContext } from '../core/ability/AbilityContext';
 import * as Contract from '../core/utils/Contract';
 import { CardType, PlayType, MetaEventName } from '../core/Constants';
 import { isPlayable } from '../core/card/CardTypes';
-import * as GameSystemLibrary from './GameSystemLibrary';
 import { PlayCardAction } from '../core/ability/PlayCardAction';
 import { PlayUnitAction } from '../actions/PlayUnitAction';
 import { PlayUpgradeAction } from '../actions/PlayUpgradeAction';
 import { PlayEventAction } from '../actions/PlayEventAction';
+import { TriggerHandlingMode } from '../core/event/EventWindow';
 
 export interface IPlayCardProperties extends ICardTargetSystemProperties {
     ignoredRequirements?: string[];
@@ -18,7 +18,7 @@ export interface IPlayCardProperties extends ICardTargetSystemProperties {
     optional?: boolean;
     entersReady?: boolean;
     playType?: PlayType;
-    // TODO: implement a "nested" property that controls whether triggered abilities triggered by playing the card resolve after that card play or after the whole ability
+    nested?: boolean;
 }
 
 // TODO: implement playing with smuggle and from non-standard zones(discard(e.g. Palpatine's Return), top of deck(e.g. Ezra Bridger), etc.) as part of abilties with another function(s)
@@ -33,7 +33,8 @@ export class PlayCardSystem<TContext extends AbilityContext = AbilityContext> ex
         ignoredRequirements: [],
         optional: false,
         entersReady: false,
-        playType: PlayType.PlayFromHand
+        playType: PlayType.PlayFromHand,
+        nested: false
     };
 
     public eventHandler(event, additionalProperties): void {
@@ -75,10 +76,11 @@ export class PlayCardSystem<TContext extends AbilityContext = AbilityContext> ex
      * Generate a play card ability for the specified card.
      */
     private generatePlayCardAbility(card: Card, playType: PlayType) {
+        const triggerHandlingMode = this.properties.nested ? TriggerHandlingMode.ResolvesTriggers : TriggerHandlingMode.PassesTriggersToParentWindow;
         switch (card.type) {
-            case CardType.BasicUnit: return new PlayUnitAction(card, playType, this.properties.entersReady);
-            case CardType.BasicUpgrade: return new PlayUpgradeAction(card, playType);
-            case CardType.Event: return new PlayEventAction(card, playType);
+            case CardType.BasicUnit: return new PlayUnitAction(card, playType, this.properties.entersReady, triggerHandlingMode);
+            case CardType.BasicUpgrade: return new PlayUpgradeAction(card, playType, triggerHandlingMode);
+            case CardType.Event: return new PlayEventAction(card, playType, triggerHandlingMode);
             default: Contract.fail(`Attempted to play a card with invalid type ${card.type} as part of an ability`);
         }
     }
