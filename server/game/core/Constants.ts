@@ -27,7 +27,8 @@ export type Arena = Location.GroundArena | Location.SpaceArena;
 
 export enum PlayType {
     PlayFromHand = 'playFromHand',
-    Smuggle = 'smuggle'
+    Smuggle = 'smuggle',
+    PlayFromOutOfPlay = 'playFromOutOfPlay',
 }
 
 export enum StatType {

@@ -66,7 +66,9 @@ class Player extends GameObject {
 
         this.playableLocations = [
             new PlayableLocation(PlayType.PlayFromHand, this, Location.Hand),
-            new PlayableLocation(PlayType.Smuggle, this, Location.Resource)
+            new PlayableLocation(PlayType.Smuggle, this, Location.Resource),
+            new PlayableLocation(PlayType.PlayFromOutOfPlay, this, Location.Deck),
+            new PlayableLocation(PlayType.PlayFromOutOfPlay, this, Location.Discard),
         ];
 
         this.limitedPlayed = 0;

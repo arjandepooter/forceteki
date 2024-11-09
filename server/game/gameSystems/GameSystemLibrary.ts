@@ -160,6 +160,11 @@ export function playCardFromHand<TContext extends AbilityContext = AbilityContex
     // playType automatically defaults to PlayFromHand
     return new PlayCardSystem(propertyFactory);
 }
+
+export function playFromOutOfPlay<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<Omit<IPlayCardProperties, 'optional'>, TContext> = {}): PlayCardSystem<TContext> {
+    return new PlayCardSystem(propertyFactory);
+}
+
 export function payResourceCost<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<IPayResourceCostProperties, TContext>): GameSystem<TContext> {
     return new PayResourceCostSystem<TContext>(propertyFactory);
 }
