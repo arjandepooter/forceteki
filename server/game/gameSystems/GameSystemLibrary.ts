@@ -161,7 +161,7 @@ export function playCardFromHand<TContext extends AbilityContext = AbilityContex
     return new PlayCardSystem(propertyFactory);
 }
 
-export function playFromOutOfPlay<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<Omit<IPlayCardProperties, 'optional'>, TContext> = {}): PlayCardSystem<TContext> {
+export function playCardFromOutOfPlay<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<Omit<IPlayCardProperties, 'optional'>, TContext> = {}): PlayCardSystem<TContext> {
     return new PlayCardSystem(propertyFactory);
 }
 

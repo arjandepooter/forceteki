@@ -636,6 +636,10 @@ class Player extends GameObject {
                 aspects = smuggleInstance.aspects;
                 cost = smuggleInstance.cost;
                 break;
+            case PlayType.PlayFromOutOfPlay:
+                aspects = card.aspects;
+                cost = card.cost;
+                break;
             default:
                 Contract.fail(`Invalid Play Type ${playingType}`);
         }

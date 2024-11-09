@@ -15,7 +15,7 @@ export default class EzraBridger extends NonLeaderUnitCard {
         this.addTriggeredAbility({
             title: 'Look at the top card of your deck.',
             when: {
-                onAttackCompleted: (event, context) => event.attack.attacker === context.source
+                onAttackCompleted: (event, context) => event.attack.attacker === context.source,
             },
             immediateEffect: AbilityHelper.immediateEffects.lookAt(
                 (context) => ({ target: context.source.controller.getTopCardOfDeck() })
@@ -23,14 +23,15 @@ export default class EzraBridger extends NonLeaderUnitCard {
             then: (thenContext) => {
                 const topCardOfDeck = thenContext.source.controller.getTopCardOfDeck();
                 return {
-                    title: 'You may play it, discard it, or leave it on top of your deck.',
+                    title: 'Look at the top card of your deck.',
                     thenCondition: (context) => context.source.controller.drawDeck.length > 0,
                     targetResolver: {
                         mode: TargetMode.Select,
+                        optional: true,
                         choices: {
-                            ['Play it']: AbilityHelper.immediateEffects.playFromOutOfPlay(() => ({ target: topCardOfDeck, playType: PlayType.PlayFromOutOfPlay })),
+                            ['Play it']: AbilityHelper.immediateEffects.playCardFromOutOfPlay(() => ({ target: topCardOfDeck, playType: PlayType.PlayFromOutOfPlay })),
                             ['Discard it']: AbilityHelper.immediateEffects.discardSpecificCard(() => ({ target: topCardOfDeck })),
-                            ['Leave it on top of your deck']: AbilityHelper.immediateEffects.noAction()
+                            ['Leave it on top of your deck']: AbilityHelper.immediateEffects.noAction,
                         }
                     }
                 };

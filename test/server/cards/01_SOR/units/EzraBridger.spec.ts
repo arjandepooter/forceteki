@@ -70,7 +70,7 @@ describe('Ezra Bridger', function() {
                 // CASE 3: We play the card from deck
                 context.player1.clickCard(context.ezraBridger);
                 // TODO: we need a 'look at' prompt for secretly revealing, currently chat logs go to all players
-                expect(context.getChatLogs(1)).toContain('Ezra Bridger sees wampa');
+                expect(context.getChatLogs(1)).toContain('Ezra Bridger sees Wampa');
                 expect(context.player1).toHaveExactPromptButtons(['Play it', 'Discard it', 'Leave it on top of your deck']);
                 // check that the damage was done before player1 clicks prompt
                 expect(context.p2Base.damage).toBe(6);
@@ -78,8 +78,8 @@ describe('Ezra Bridger', function() {
                 context.player1.clickPrompt('Play it');
 
                 // check board state
-                expect(context.player1.countExhaustedResources).toEqual(4);
-                expect(context.wampa).toBeInLocation('groundArena');
+                expect(context.player1.countExhaustedResources()).toBe(4);
+                expect(context.wampa).toBeInLocation('ground arena');
                 expect(context.wampa.exhausted).toBe(true);
             });
         });
