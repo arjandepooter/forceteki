@@ -57,10 +57,10 @@ export class PutIntoPlaySystem<TContext extends AbilityContext = AbilityContext>
         const contextCopy = context.copy({ source: card });
         const player = this.getPutIntoPlayPlayer(contextCopy);
         const location = card.location;
-
+        const playAbleLocations = [Location.Resource, Location.Deck, Location.Discard];
         if (!super.canAffect(card, context)) {
             return false;
-        } else if (!card.canBeInPlay() || card.isInPlay() || (card.facedown && card.location !== Location.Resource)) {
+        } else if (!card.canBeInPlay() || card.isInPlay() || (card.facedown && !playAbleLocations.includes(card.location))) {
             return false;
         } else if (card.location === Location.Resource && !card.hasSomeKeyword(KeywordName.Smuggle)) {
             return false;
