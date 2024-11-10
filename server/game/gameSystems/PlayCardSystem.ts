@@ -39,7 +39,9 @@ export class PlayCardSystem<TContext extends AbilityContext = AbilityContext> ex
     public eventHandler(event, additionalProperties): void {
         const player = event.player;
         const newContext = (event.playCardAbility as PlayCardAction).createContext(player);
-        newContext.ability.playType = newContext.playType;
+        const properties = this.generatePropertiesFromContext(newContext, additionalProperties);
+        newContext.ability.playType = properties.playType;
+        newContext.ability.entersReady = properties.entersReady;
         event.context.game.queueStep(new AbilityResolver(event.context.game, newContext, event.optional));
     }
 
