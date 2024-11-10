@@ -85,6 +85,7 @@ export enum EffectName {
 export enum Duration {
     Custom = 'custom',
     Persistent = 'persistent',
+    UntilEndOfAction = 'untilEndOfAction',
     UntilEndOfAttack = 'untilEndOfAttack',
     UntilEndOfPhase = 'untilEndOfPhase',
     UntilEndOfRound = 'untilEndOfRound',
@@ -163,6 +164,7 @@ export enum TokenName {
 export enum EventName {
     OnAbilityResolved = 'onAbilityResolved',
     OnAbilityResolverInitiated = 'onAbilityResolverInitiated',
+    OnActionEnded = 'onActionEnded',
     OnAddTokenToCard = 'onAddTokenToCard',
     OnAttackCompleted = 'onAttackCompleted',
     OnAttackDamageResolved = 'onAttackDamageResolved',

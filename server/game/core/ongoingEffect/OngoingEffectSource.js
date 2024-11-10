@@ -13,6 +13,14 @@ class OngoingEffectSource extends GameObject {
     }
 
     /**
+     * Applies an effect which lasts until the end of the action.
+     */
+    untilEndOfAction(propertyFactory) {
+        var properties = propertyFactory(AbilityHelper);
+        this.addEffectToEngine(Object.assign({ duration: Duration.UntilEndOfAction, locationFilter: WildcardLocation.Any }, properties));
+    }
+
+    /**
      * Applies an effect which lasts until the end of the phase.
      */
     untilEndOfPhase(propertyFactory) {
