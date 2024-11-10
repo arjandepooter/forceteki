@@ -70,6 +70,7 @@ import { TriggeredAbilityContext } from '../core/ability/TriggeredAbilityContext
 import { IPlayerLastingEffectProperties, PlayerLastingEffectSystem } from './PlayerLastingEffectSystem';
 import { IPlayerPhaseLastingEffectProperties, PlayerPhaseLastingEffectSystem } from './PlayerPhaseLastingEffectSystem';
 import { ILookMoveDeckCardsTopOrBottomProperties, LookMoveDeckCardsTopOrBottomSystem } from './LookMoveDeckCardsTopOrBottomSystem';
+import { DiscardFromDeckSystem, IDiscardFromDeckProperties } from './DiscardFromDeckSystem';
 // import { TakeControlAction, TakeControlProperties } from './TakeControlAction';
 // import { TriggerAbilityAction, TriggerAbilityProperties } from './TriggerAbilityAction';
 // import { TurnCardFacedownAction, TurnCardFacedownProperties } from './TurnCardFacedownAction';
@@ -114,6 +115,9 @@ export function deploy<TContext extends AbilityContext = AbilityContext>(propert
 }
 export function defeat<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<IDefeatCardProperties, TContext> = {}): CardTargetSystem<TContext> {
     return new DefeatCardSystem<TContext>(propertyFactory);
+}
+export function discardFromDeck<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<IDiscardFromDeckProperties, TContext> = {}): PlayerTargetSystem<TContext> {
+    return new DiscardFromDeckSystem<TContext>(propertyFactory);
 }
 export function discardSpecificCard<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<IDiscardSpecificCardProperties, TContext> = {}): DiscardSpecificCardSystem<TContext> {
     return new DiscardSpecificCardSystem<TContext>(propertyFactory);
