@@ -14,7 +14,7 @@ export default class RallyingCry extends EventCard {
         this.setEventAbility({
             title: 'Each friendly unit gains Raid 2 this phase',
             immediateEffect: AbilityHelper.immediateEffects.forThisPhaseCardEffect((context) => ({
-                effect: AbilityHelper.ongoingEffects.gainKeyword({ keyword: KeywordName.Raid,amount: 2,}),
+                effect: AbilityHelper.ongoingEffects.gainKeyword({ keyword: KeywordName.Raid, amount: 2 }),
                 target: context.source.controller.getUnitsInPlay()
             }))
         });

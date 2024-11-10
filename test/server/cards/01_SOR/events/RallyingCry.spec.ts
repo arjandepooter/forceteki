@@ -33,7 +33,7 @@ describe('Rallying Cry', function () {
                 expect(context.p1Base.damage).toBe(2);
 
                 // Raid 2 should be gone by next phase
-                this.moveToNextActionPhase()                
+                context.moveToNextActionPhase();
                 context.player1.clickCard(context.deathTrooper);
                 expect(context.player1).toBeAbleToSelectExactly([context.p2Base, context.ruggedSurvivors]);
                 context.player1.clickCard(context.p2Base);

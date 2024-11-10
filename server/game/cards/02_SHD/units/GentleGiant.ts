@@ -22,7 +22,6 @@ export default class GentleGiant extends NonLeaderUnitCard {
                 }))
 
             }
-            
         });
     }
 }
