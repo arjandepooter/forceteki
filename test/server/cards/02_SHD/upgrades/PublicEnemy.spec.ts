@@ -25,6 +25,8 @@ describe('Public Enemy', function() {
                 // Destroys Wampa
                 context.player1.clickCard(context.wampa);
                 expect(context.atst.damage).toBe(4);
+                // Checking Wampa is destroyed
+                expect(context.wampa).toBeInLocation('discard');
                 // Selecting Unit to give shield
                 expect(context.player1).toHavePrompt('Choose a unit');
                 expect(context.player1).toHavePassAbilityButton();
