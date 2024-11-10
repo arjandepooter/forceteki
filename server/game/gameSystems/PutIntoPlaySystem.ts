@@ -56,7 +56,6 @@ export class PutIntoPlaySystem<TContext extends AbilityContext = AbilityContext>
     public override canAffect(card: Card, context: TContext): boolean {
         const contextCopy = context.copy({ source: card });
         const player = this.getPutIntoPlayPlayer(contextCopy);
-        const location = card.location;
         const playAbleLocations = [Location.Resource, Location.Deck, Location.Discard];
         if (!super.canAffect(card, context)) {
             return false;
