@@ -67,7 +67,7 @@ export class ResourcePrompt extends AllPlayerPrompt {
     public override onCardClicked(player: Player, card: Card) {
         Contract.assertNotNullLike(player);
         Contract.assertNotNullLike(card);
-
+        console.log("test");
         if (
             !this.activeCondition(player) || !player.hand.includes(card) ||
             this.selectedCards[player.name].length === this.nCardsToResource
