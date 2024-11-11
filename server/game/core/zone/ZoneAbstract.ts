@@ -20,7 +20,7 @@ export abstract class ZoneAbstract<TCard extends Card> {
     public abstract readonly hiddenForPlayers: RelativePlayer | null;
     public abstract readonly zoneName: Location;
 
-    public abstract get numCards(): number;
+    public abstract get count(): number;
 
     public get cards(): TCard[] {
         return this.getCards();
@@ -36,7 +36,7 @@ export abstract class ZoneAbstract<TCard extends Card> {
         return this.getCards(filter).length > 0;
     }
 
-    public hasCard(card: TCard): boolean {
+    public hasCard(card: Card): boolean {
         const cardCount = this.cards.filter((zoneCard: TCard) => zoneCard === card).length;
 
         Contract.assertFalse(cardCount > 1, `Found ${cardCount} duplicates of ${card.internalName} in ${this.zoneName}`);

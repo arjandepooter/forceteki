@@ -17,7 +17,7 @@ export class BaseZone extends ZoneAbstract<LeaderCard | BaseCard> {
         return this.leader ? [this.base, this.leader] : [this.base];
     }
 
-    public override get numCards() {
+    public override get count() {
         return this.leader ? 2 : 1;
     }
 

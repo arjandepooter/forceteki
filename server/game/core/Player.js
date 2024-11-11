@@ -24,6 +24,11 @@ const { BaseCard } = require('./card/BaseCard');
 const { LeaderUnitCard } = require('./card/LeaderUnitCard');
 const { InPlayCard } = require('./card/baseClasses/InPlayCard');
 const { AbilityContext } = require('./ability/AbilityContext');
+const { HandZone } = require('./zone/HandZone');
+const { DeckZone } = require('./zone/DeckZone');
+const { ResourceZone } = require('./zone/ResourceZone');
+const { DiscardZone } = require('./zone/DiscardZone');
+const { OutsideTheGameZone } = require('./zone/OutsideTheGameZone');
 
 class Player extends GameObject {
     constructor(id, user, owner, game, clockDetails) {
@@ -45,15 +50,13 @@ class Player extends GameObject {
         this.left = false;
         this.lobbyId = null;
 
-        // TODO: add a Zone class for managing these
-        this.hand = [];
-        this.drawDeck = [];
-        this.resources = [];
+        this.handZone = new HandZone(this);
+        this.drawDeck = null;
+        this.resourceZone = new ResourceZone(this);
         this.spaceArena = [];
         this.groundArena = [];
-        this.discard = [];
-        this.removedFromGame = [];
-        this.additionalPiles = {};
+        this.discardZone = new DiscardZone(this);
+        this.outsideTheGame = new OutsideTheGameZone(this);
         this.canTakeActionsThisPhase = null;
 
         this.baseZone = [];
@@ -177,8 +180,9 @@ class Player extends GameObject {
         return this.leader.title === title || this.getArenaCards(WildcardLocation.AnyArena).filter((card) => card.title === title).length > 0;
     }
 
+    // TODO THIS PR: remove
     getResourceCards() {
-        return [...this.resources];
+        return this.resources;
     }
 
     /**
@@ -738,6 +742,7 @@ class Player extends GameObject {
      * Gets the appropriate list for the passed location pile
      * @param {String} source
      */
+    // TODO THIS PR: update
     getCardPile(source) {
         switch (source) {
             case Location.Hand:
@@ -747,9 +752,9 @@ class Player extends GameObject {
             case Location.Discard:
                 return this.discard;
             case Location.Resource:
-                return this.resources;
+                return this.resourceZone;
             case Location.RemovedFromGame:
-                return this.removedFromGame;
+                return this.outsideTheGame;
             case Location.SpaceArena:
                 return this.spaceArena;
             case Location.GroundArena:
@@ -759,17 +764,8 @@ class Player extends GameObject {
             case Location.OutsideTheGame:
                 return this.outsideTheGameCards;
             default:
-                if (source) {
-                    if (!this.additionalPiles[source]) {
-                        Contract.fail(`Attempting to find pile '${source}', but it does not exist for ${this.name}. Use createAdditionalPile() to add new pile types.`);
-                    }
-                    return this.additionalPiles[source].cards;
-                }
+                Contract.fail(`Unknown zone name enum value: ${source}`);
         }
-    }
-
-    createAdditionalPile(name, properties) {
-        this.additionalPiles[name] = Object.assign({ cards: [] }, properties);
     }
 
     // /**
@@ -825,11 +821,6 @@ class Player extends GameObject {
      * @param {Location} location
      */
     isLegalLocationForCardType(cardType, location) {
-        // if we're trying to go into an additional pile, we're probably supposed to be there
-        if (this.additionalPiles[location]) {
-            return true;
-        }
-
         const legalLocationsForType = Helpers.defaultLegalLocationsForCardType(cardType);
 
         return legalLocationsForType && EnumHelpers.cardLocationMatches(location, legalLocationsForType);
@@ -857,18 +848,32 @@ class Player extends GameObject {
         this.decklistNames.selected = true;
     }
 
+    get hand() {
+        return this.handZone.cards;
+    }
+
+    get discard() {
+        return this.discardZone.cards;
+    }
+
+    get resources() {
+        return this.resourceZone.cards;
+    }
+
     /**
      * Returns the number of resources available to spend
      */
+    // TODO THIS PR: rename to "get readyResourceCount" in noisy PR
     countSpendableResources() {
-        return this.resources.reduce((count, card) => count += !card.exhausted, 0);
+        return this.resourceZone.readyResourceCount;
     }
 
     /**
      * Returns the number of exhausted resources
      */
+    // TODO THIS PR: rename to "get exhaustedResourceCount" in noisy PR
     countExhaustedResources() {
-        return this.resources.reduce((count, card) => count += card.exhausted, 0);
+        return this.resourceZone.exhaustedResourceCount;
     }
 
     /**
@@ -890,7 +895,7 @@ class Player extends GameObject {
         const regularResourcesToReady = count - this.readyResourcesInList(readyPriorityResources, count);
 
         if (regularResourcesToReady > 0) {
-            const readyRegularResources = this.resources.filter((card) => !card.exhausted);
+            const readyRegularResources = this.resourceZone.readyResources;
             this.readyResourcesInList(readyRegularResources, regularResourcesToReady);
         }
     }
@@ -912,7 +917,7 @@ class Player extends GameObject {
      * Ready the specified number of resources
      */
     readyResources(count) {
-        let exhaustedResources = this.resources.filter((card) => card.exhausted);
+        let exhaustedResources = this.resourceZone.readyResources;
         for (let i = 0; i < Math.min(count, exhaustedResources.length); i++) {
             exhaustedResources[i].exhausted = false;
         }
@@ -986,6 +991,7 @@ class Player extends GameObject {
      * Removes a card from whichever list it's currently in
      * @param card DrawCard
      */
+    // TODO THIS PR: update
     removeCardFromPile(card) {
         // upgrades have a special exception here b/c they might be in our pile but controlled by the opponent
         if (card.controller !== this && !card.isUpgrade()) {
@@ -1010,29 +1016,25 @@ class Player extends GameObject {
                     this.groundArena = updatedPile;
                     break;
                 case Location.Hand:
-                    this.hand = updatedPile;
+                    this.handZone = updatedPile;
                     break;
                 case Location.Deck:
                     this.drawDeck = updatedPile;
                     break;
                 case Location.Discard:
-                    this.discard = updatedPile;
+                    this.discardZone = updatedPile;
                     break;
                 case Location.RemovedFromGame:
-                    this.removedFromGame = updatedPile;
+                    this.outsideTheGame = updatedPile;
                     break;
                 case Location.OutsideTheGame:
                     this.outsideTheGameCards = updatedPile;
                     break;
                 case Location.Resource:
-                    this.resources = updatedPile;
+                    this.resourceZone = updatedPile;
                     break;
                 default:
-                    if (this.additionalPiles[originalPile]) {
-                        this.additionalPiles[originalPile].cards = updatedPile;
-                    } else {
-                        Contract.fail(`Attempting to remove ${card.internalName} from pile, but pile '${originalLocation}' does not exist for ${this.name}`);
-                    }
+                    Contract.fail(`Unknown zone name enum value: ${originalLocation}`);
             }
         }
     }
@@ -1110,21 +1112,6 @@ class Player extends GameObject {
         this.promptState.cancelPrompt();
     }
 
-    /**
-     * Sets a flag indicating that this player passed the dynasty phase, and can't act again
-     */
-    passDynasty() {
-        this.passedDynasty = true;
-    }
-
-    /**
-     * Sets te value of the dial in the UI, and sends a chat message revealing the players bid
-     */
-    setShowBid(bid) {
-        this.showBid = bid;
-        this.game.addMessage('{0} reveals a bid of {1}', this, bid);
-    }
-
     isTopCardShown(activePlayer = undefined) {
         if (!activePlayer) {
             activePlayer = this;
@@ -1175,7 +1162,7 @@ class Player extends GameObject {
             cardPiles: {
                 // cardsInPlay: this.getSummaryForCardList(this.cardsInPlay, activePlayer),
                 hand: this.getSummaryForHand(this.hand, activePlayer, false),
-                removedFromGame: this.getSummaryForCardList(this.removedFromGame, activePlayer)
+                outsideTheGame: this.getSummaryForCardList(this.outsideTheGame, activePlayer)
             },
             disconnected: this.disconnected,
             // faction: this.faction,
@@ -1186,20 +1173,10 @@ class Player extends GameObject {
             // optionSettings: this.optionSettings,
             phase: this.game.currentPhase,
             promptedActionWindows: this.promptedActionWindows,
-            showBid: this.showBid,
             // stats: this.getStats(),
             // timerSettings: this.timerSettings,
             user: safeUser
         };
-
-        // Should we consolidate card piles that use getSummaryForCardList?
-        if (this.additionalPiles && Object.keys(this.additionalPiles)) {
-            Object.keys(this.additionalPiles).forEach((key) => {
-                if (this.additionalPiles[key].cards.size() > 0) {
-                    state.cardPiles[key] = this.getSummaryForCardList(this.additionalPiles[key].cards, activePlayer);
-                }
-            });
-        }
 
         // if (this.showDeck) {
         //     state.showDeck = true;

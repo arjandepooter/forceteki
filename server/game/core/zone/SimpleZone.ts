@@ -12,7 +12,7 @@ export abstract class SimpleZone<TCard extends Card> extends ZoneAbstract<TCard>
         return [...this._cards];
     }
 
-    public override get numCards() {
+    public override get count() {
         return this._cards.length;
     }
 

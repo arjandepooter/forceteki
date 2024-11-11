@@ -20,7 +20,7 @@ export class DeckZone extends ZoneAbstract<PlayableCard> {
         return [...this.deck];
     }
 
-    public override get numCards() {
+    public override get count() {
         return this.deck.length;
     }
 

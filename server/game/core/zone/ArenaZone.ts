@@ -1,5 +1,5 @@
 import { InPlayCard } from '../card/baseClasses/InPlayCard';
-import { WildcardCardType } from '../Constants';
+import { Location, WildcardCardType } from '../Constants';
 import Game from '../Game';
 import Player from '../Player';
 import * as Contract from '../utils/Contract';
@@ -20,14 +20,15 @@ export class ArenaZone extends ZoneAbstract<InPlayCard> {
         return Array.from(this._cards.values()).flat();
     }
 
-    public override get numCards() {
+    public override get count() {
         let cardCount = 0;
         this._cards.forEach((cards) => cardCount += cards.length);
         return cardCount;
     }
 
-    public constructor(owner: Player) {
+    public constructor(owner: Game, zoneName: Location) {
         super(owner);
+        this.zoneName = zoneName;
     }
 
     public override getCards(filter?: IArenaCardFilterProperties): InPlayCard[] {
