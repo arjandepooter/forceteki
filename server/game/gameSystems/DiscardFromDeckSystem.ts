@@ -1,11 +1,10 @@
-import AbilityHelper from '../AbilityHelper';
 import { AbilityContext } from '../core/ability/AbilityContext';
 import { Card } from '../core/card/Card';
-import { EventName, Location } from '../core/Constants';
+import { EventName } from '../core/Constants';
 import { IPlayerTargetSystemProperties, PlayerTargetSystem } from '../core/gameSystem/PlayerTargetSystem';
 import Player from '../core/Player';
-import { GameEvent } from '../core/event/GameEvent';
-import { DamageSystem } from './DamageSystem';
+import { DiscardSpecificCardSystem } from './DiscardSpecificCardSystem';
+import * as Contract from '../core/utils/Contract';
 
 export interface IDiscardFromDeckProperties extends IPlayerTargetSystemProperties {
     amount?: number;
@@ -19,12 +18,15 @@ export class DiscardFromDeckSystem<TContext extends AbilityContext = AbilityCont
         amount: 1
     };
 
-    public eventHandler(event): void {
-        for (let i = 0; i < event.amount; i++) {
-            const topCard = event.player.getTopCardOfDeck();
-            event.card.controller.moveCard(topCard, Location.Discard);
-        }
-    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    public override eventHandler(_event): void { }
+
+    // public eventHandler(event): void {
+    //     for (let i = 0; i < event.amount; i++) {
+    //         const topCard = event.player.getTopCardOfDeck();
+    //         event.player.moveCard(topCard, Location.Discard);
+    //     }
+    // }
 
     public override getEffectMessage(context: TContext): [string, any[]] {
         const properties = this.generatePropertiesFromContext(context);
@@ -46,21 +48,35 @@ export class DiscardFromDeckSystem<TContext extends AbilityContext = AbilityCont
         event.amount = amount;
     }
 
-    // protected override updateEvent(event, card: Card, context: TContext, additionalProperties): void {
-    //     super.updateEvent(event, card, context, additionalProperties);
+    public override queueGenerateEventGameSteps(events: any[], context: TContext, additionalProperties: Record<string, any> = {}): void {
+        const properties = this.generatePropertiesFromContext(context, additionalProperties);
+        for (const player of properties.target as Player[]) {
+            const availableDeck = player.drawDeck;
 
-    //     // TODO: convert damage on draw to be a real replacement effect once we have partial replacement working
-    //     event.setContingentEventsGenerator((event) => {
-    //         // Add a contingent event to deal damage for any cards the player fails to draw due to not having enough left in their deck.
-    //         const contingentEvents = [];
-    //         if (event.amount > event.player.drawDeck.length) {
-    //             const damageAmount = 3 * (event.amount - event.player.drawDeck.length);
-    //             contingentEvents.push(new DamageSystem({
-    //                 target: event.player.base,
-    //                 amount: damageAmount
-    //             }).generateEvent(context));
-    //         }
-    //         return contingentEvents;
-    //     });
-    // }
+            Contract.assertNonNegative(properties.amount);
+
+            const amount = Math.min(availableDeck.length, properties.amount);
+
+            if (amount === 0) {
+                events.push(this.generateEvent(context, additionalProperties));
+                return;
+            }
+
+            const topCards = player.getTopCardsOfDeck(amount);
+            if (Array.isArray(topCards)) {
+                topCards.forEach((card) => this.generateEventsForCard(card, context, events, additionalProperties));
+            } else if (topCards !== null) {
+                this.generateEventsForCard(topCards, context, events, additionalProperties);
+            }
+
+            // Add a final event to convey overall event resolution status.
+            events.push(this.generateEvent(context, additionalProperties));
+        }
+    }
+
+    private generateEventsForCard(card: Card, context: TContext, events: any[], additionalProperties: Record<string, any>): void {
+        const specificDiscardEvent = new DiscardSpecificCardSystem({ target: card }).generateEvent(context);
+        events.push(specificDiscardEvent);
+        // TODO: Update this to include partial resolution once added for discards that could not be done to fullest extent.
+    }
 }

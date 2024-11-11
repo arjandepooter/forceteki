@@ -1,6 +1,6 @@
 import AbilityHelper from '../../../AbilityHelper';
 import { NonLeaderUnitCard } from '../../../core/card/NonLeaderUnitCard';
-import { RelativePlayer } from '../../../core/Constants';
+import { Aspect, Trait } from '../../../core/Constants';
 
 export default class KananJarrusRevealedJedi extends NonLeaderUnitCard {
     protected override getImplementationId() {
@@ -13,11 +13,28 @@ export default class KananJarrusRevealedJedi extends NonLeaderUnitCard {
     public override setupCardAbilities() {
         this.addOnAttackAbility({
             title: 'Discard a card from the defending player\'s deck for each Spectre you control. Heal 1 damage for each aspect among the discarded cards.',
-            immediateEffect: AbilityHelper.immediateEffects.discardFromDeck((context) => ({
-                amount: 1,
-                target: context.source.activeAttack.target.controller
-            }))
+            optional: true,
+            immediateEffect: AbilityHelper.immediateEffects.sequential([
+                AbilityHelper.immediateEffects.discardFromDeck((context) => ({
+                    amount: context.source.controller.getUnitsInPlayWithTrait(Trait.Spectre).length,
+                    target: context.source.activeAttack.target.controller
+                })),
+                AbilityHelper.immediateEffects.heal((context) => ({
+                    target: context.source.controller.base,
+                    amount: this.getAspectCountFromEvents(context.events)
+                }))
+            ])
         });
+    }
+
+    private getAspectCountFromEvents(events: any[]): number {
+        const aspects = new Set<Aspect>();
+        // TODO: The event here doesn't have the Aspects
+        const discardedCards = events.filter((event) => event.name === 'onCardDiscarded').map((event) => event.card);
+        for (const card of discardedCards) {
+            card.aspects.forEach((aspect) => aspects.add(aspect));
+        }
+        return aspects.size;
     }
 }
 

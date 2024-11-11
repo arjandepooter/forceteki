@@ -140,6 +140,14 @@ class Player extends GameObject {
         return this.getArenaCards(arena).filter((card) => card.isUnit() && cardCondition(card));
     }
 
+    /**
+     * Get all units in designated play arena(s) controlled by this player
+     * @param { String } trait Get units with this trait
+     */
+    getUnitsInPlayWithTrait(trait) {
+        return this.getUnitsInPlay().filter((card) => card.hasSomeTrait(trait));
+    }
+
 
     /**
      * Get all units in designated play arena(s) controlled by this player
@@ -420,6 +428,21 @@ class Player extends GameObject {
     getTopCardOfDeck() {
         if (this.drawDeck.length > 0) {
             return this.drawDeck[0];
+        }
+        return null;
+    }
+
+
+    /**
+     * Returns ths top cards of the player's deck
+     * @returns {import('./card/CardTypes').PlayableCard[] |null} the Card,© or null if the deck is empty
+     */
+    getTopCardsOfDeck(numCard = 1) {
+        const deckLength = this.drawDeck.length;
+        const cardsToGet = Math.min(numCard, deckLength);
+
+        if (this.drawDeck.length > 0) {
+            return this.drawDeck.slice(0, cardsToGet);
         }
         return null;
     }
