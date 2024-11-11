@@ -12,15 +12,12 @@ export default class GentleGiant extends NonLeaderUnitCard {
 
     public override setupCardAbilities() {
         this.addOnAttackAbility({
-            title: 'You may heal damage from another unit equal to the damage on this unit',
+            title: 'Heal damage from another unit equal to the damage on this unit',
             optional: true,
             targetResolver: {
                 cardCondition: (card, context) => card !== context.source,
                 cardTypeFilter: WildcardCardType.Unit,
-                immediateEffect: AbilityHelper.immediateEffects.heal((context) => ({
-                    amount: context.source.damage
-                }))
-
+                immediateEffect: AbilityHelper.immediateEffects.heal((context) => ({ amount: context.source.damage }))
             }
         });
     }
