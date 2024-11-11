@@ -1,5 +1,6 @@
 import AbilityHelper from '../../../AbilityHelper';
 import { NonLeaderUnitCard } from '../../../core/card/NonLeaderUnitCard';
+import { KeywordName, Trait } from '../../../core/Constants';
 
 export default class ChopperMetalMenace extends NonLeaderUnitCard {
     protected override getImplementationId() {
@@ -23,6 +24,12 @@ export default class ChopperMetalMenace extends NonLeaderUnitCard {
                     onFalse: AbilityHelper.immediateEffects.noAction()
                 }))
             ])
+        });
+
+        this.addConstantAbility({
+            title: 'While you control another Spectre unit, Chopper gains Raid 1',
+            condition: (context) => context.source.controller.getOtherUnitsInPlayWithTrait(context.source, Trait.Spectre).length > 0,
+            ongoingEffect: AbilityHelper.ongoingEffects.gainKeyword({ keyword: KeywordName.Raid, amount: 1 })
         });
     }
 

@@ -15,7 +15,8 @@ const {
     Aspect,
     WildcardLocation,
     PlayType,
-    KeywordName
+    KeywordName,
+    Trait
 } = require('./Constants');
 
 const EnumHelpers = require('./utils/EnumHelpers');
@@ -146,6 +147,16 @@ class Player extends GameObject {
      */
     getUnitsInPlayWithTrait(trait) {
         return this.getUnitsInPlay().filter((card) => card.hasSomeTrait(trait));
+    }
+
+    /**
+     * Get all cards in designated play arena(s) other than the passed card controlled by this player.
+     * @param { any } ignoreUnit Unit to filter from the returned results
+     * @param { Trait } trait The Trait to check for
+     * @param { WildcardLocation.AnyArena | Location.GroundArena | Location.SpaceArena } arena Arena to select units from
+     */
+    getOtherUnitsInPlayWithTrait(ignoreUnit, trait, arena = WildcardLocation.AnyArena) {
+        return this.getArenaCards(arena).filter((card) => card.isUnit() && card !== ignoreUnit && card.hasSomeTrait(trait));
     }
 
 

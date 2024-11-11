@@ -52,7 +52,7 @@ describe('Chopper, Metal Menace', function() {
                 expect(context.player2.countSpendableResources()).toBe(5);
 
                 context.player1.clickCard(context.chopper);
-                expect(context.player2.base.damage).toBe(1);
+                expect(context.player2.base.damage).toBe(2);
 
                 // Check mill and heal
                 expect(context.player2.deck.length).toBe(4);
