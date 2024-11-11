@@ -15,7 +15,7 @@ import { KeywordInstance, KeywordWithAbilityDefinition, KeywordWithCostValues } 
 import * as KeywordHelpers from '../ability/KeywordHelpers';
 import { StateWatcherRegistrar } from '../stateWatcher/StateWatcherRegistrar';
 import type { EventCard } from './EventCard';
-import type { CardWithExhaustProperty, CardWithTriggeredAbilities, CardWithConstantAbilities, TokenCard, UnitCard, CardWithDamageProperty } from './CardTypes';
+import type { CardWithExhaustProperty, CardWithTriggeredAbilities, CardWithConstantAbilities, TokenCard, UnitCard, CardWithDamageProperty, PlayableCard } from './CardTypes';
 import type { UpgradeCard } from './UpgradeCard';
 import type { BaseCard } from './BaseCard';
 import type { LeaderCard } from './LeaderCard';
@@ -328,6 +328,14 @@ export class Card extends OngoingEffectSource {
      * The returned type set is equivalent to {@link CardWithExhaustProperty}.
      */
     public canBeExhausted(): this is PlayableOrDeployableCard {
+        return false;
+    }
+
+    /**
+     * Returns true if the card is in a location where it can legally be exhausted.
+     * The returned type set is equivalent to {@link CardWithExhaustProperty}.
+     */
+    public isTokenOrPlayable(): this is PlayableCard {
         return false;
     }
 

@@ -54,6 +54,7 @@ export type AnyCard =
   TokenUnitCard;
 
 /** Type union for any card type that can be played (not deployed) */
+// TODO THIS PR: in noisy PR, rename to TokenOrPlayableCard
 export type PlayableCard =
   EventCard |
   UpgradeCard |

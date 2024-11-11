@@ -160,6 +160,7 @@ export enum TokenName {
     Experience = 'experience'
 }
 
+// TODO: start removing these if they aren't used
 export enum EventName {
     OnAbilityResolved = 'onAbilityResolved',
     OnAbilityResolverInitiated = 'onAbilityResolverInitiated',

@@ -50,8 +50,9 @@ class Player extends GameObject {
         this.left = false;
         this.lobbyId = null;
 
+        // TODO THIS PR: make some of these private with #
         this.handZone = new HandZone(this);
-        this.drawDeck = null;
+        this.deckZone = null;
         this.resourceZone = new ResourceZone(this);
         this.spaceArena = [];
         this.groundArena = [];
@@ -417,7 +418,7 @@ class Player extends GameObject {
     }
 
     /**
-     * Draws the passed number of cards from the top of the conflict deck into this players hand, shuffling and deducting honor if necessary
+     * Draws the passed number of cards from the top of the deck into this players hand, shuffling if necessary
      * @param {number} numCards
      */
     drawCardsToHand(numCards) {
@@ -502,15 +503,12 @@ class Player extends GameObject {
     // }
 
     /**
-     * Shuffles the deck, emitting an event and displaying a message in chat
+     * Shuffles the deck, displaying a message in chat
      * @param {AbilityContext} context
      */
     shuffleDeck(context = null) {
-        if (this.name !== 'Dummy Player') {
-            this.game.addMessage('{0} is shuffling their dynasty deck', this);
-        }
-        this.game.emitEvent(EventName.OnDeckShuffled, context, { player: this });
-        this.drawDeck = Helpers.shuffle(this.drawDeck);
+        this.game.addMessage('{0} is shuffling their deck', this);
+        this.deckZone.shuffle();
     }
 
     /**
@@ -525,7 +523,7 @@ class Player extends GameObject {
             this.leader = preparedDecklist.leader;
         }
 
-        this.drawDeck = preparedDecklist.deckCards;
+        this.deckZone = new DeckZone(this, preparedDecklist.deckCards);
         this.decklist = preparedDecklist;
     }
 
@@ -848,6 +846,7 @@ class Player extends GameObject {
         this.decklistNames.selected = true;
     }
 
+    // TODO NOISY PR: rearrange this file into sections
     get hand() {
         return this.handZone.cards;
     }
@@ -858,6 +857,10 @@ class Player extends GameObject {
 
     get resources() {
         return this.resourceZone.cards;
+    }
+
+    get drawDeck() {
+        return this.deckZone.cards;
     }
 
     /**
@@ -1019,7 +1022,7 @@ class Player extends GameObject {
                     this.handZone = updatedPile;
                     break;
                 case Location.Deck:
-                    this.drawDeck = updatedPile;
+                    this.deckZone = updatedPile;
                     break;
                 case Location.Discard:
                     this.discardZone = updatedPile;

@@ -2,6 +2,7 @@ import { PlayableCard } from '../card/CardTypes';
 import { Location, RelativePlayer } from '../Constants';
 import Player from '../Player';
 import * as Contract from '../utils/Contract';
+import * as Helpers from '../utils/Helpers';
 import { ICardFilterProperties, ZoneAbstract } from './ZoneAbstract';
 
 export enum AddCardSide {
@@ -78,5 +79,9 @@ export class DeckZone extends ZoneAbstract<PlayableCard> {
         Contract.assertFalse(cardIdx === -1, `Attempting to remove card ${card.internalName} from ${this} but it is not there. Its current location is ${card.location}.`);
 
         this.deck.splice(cardIdx, 1);
+    }
+
+    public shuffle() {
+        Helpers.shuffle(this.deck);
     }
 }

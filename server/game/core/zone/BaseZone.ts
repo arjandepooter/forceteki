@@ -1,6 +1,6 @@
 import { BaseCard } from '../card/BaseCard';
 import { LeaderCard } from '../card/LeaderCard';
-import { Location, RelativePlayer } from '../Constants';
+import { Location } from '../Constants';
 import Player from '../Player';
 import * as Contract from '../utils/Contract';
 import { ICardFilterProperties, ZoneAbstract } from './ZoneAbstract';
