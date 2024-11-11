@@ -1,8 +1,8 @@
 import { PlayableCard } from '../card/CardTypes';
 import { Location, RelativePlayer } from '../Constants';
-import { BasicZone } from './BasicZone';
+import { SimpleZone } from './SimpleZone';
 
-export class ResourceZone extends BasicZone<PlayableCard> {
+export class ResourceZone extends SimpleZone<PlayableCard> {
     public override readonly hiddenForPlayers: RelativePlayer.Opponent;
     public override readonly zoneName: Location.Resource;
 
