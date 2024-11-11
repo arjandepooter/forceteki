@@ -58,7 +58,7 @@ import { ResourceCardSystem, IResourceCardProperties } from './ResourceCardSyste
 import { ReturnToHandSystem, IReturnToHandProperties } from './ReturnToHandSystem';
 import { ReturnToHandFromPlaySystem, IReturnToHandFromPlayProperties } from './ReturnToHandFromPlaySystem';
 import { RevealSystem, IRevealProperties } from './RevealSystem';
-import { PayResourceCostSystem, IPayResourceCostProperties } from './PayResourceCostSystem';
+import { ExhaustResourcesSystem, IExhaustResourcesProperties } from './ExhaustResourcesSystem';
 import { SearchDeckSystem, ISearchDeckProperties } from './SearchDeckSystem';
 import { SelectCardSystem, ISelectCardProperties } from './SelectCardSystem';
 // import { SelectTokenAction, SelectTokenProperties } from './SelectTokenAction';
@@ -165,8 +165,12 @@ export function playCardFromHand<TContext extends AbilityContext = AbilityContex
     // playType automatically defaults to PlayFromHand
     return new PlayCardSystem(propertyFactory);
 }
-export function payResourceCost<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<IPayResourceCostProperties, TContext>): GameSystem<TContext> {
-    return new PayResourceCostSystem<TContext>(propertyFactory);
+export function exhaustResources<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<IExhaustResourcesProperties, TContext>): GameSystem<TContext> {
+    return new ExhaustResourcesSystem<TContext>(Object.assign({ ...propertyFactory, isCost: false }));
+}
+
+export function payResourceCost<TContext extends AbilityContext = AbilityContext>(propertyFactory: PropsFactory<IExhaustResourcesProperties, TContext>): GameSystem<TContext> {
+    return new ExhaustResourcesSystem<TContext>(propertyFactory);
 }
 
 /**

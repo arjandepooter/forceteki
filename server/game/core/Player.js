@@ -435,7 +435,7 @@ class Player extends GameObject {
 
     /**
      * Returns ths top cards of the player's deck
-     * @returns {import('./card/CardTypes').PlayableCard[] |null} the Card,© or null if the deck is empty
+     * @returns {import('./card/CardTypes').PlayableCard[]} the Card,© or null if the deck is empty
      */
     getTopCardsOfDeck(numCard = 1) {
         const deckLength = this.drawDeck.length;
@@ -444,7 +444,7 @@ class Player extends GameObject {
         if (this.drawDeck.length > 0) {
             return this.drawDeck.slice(0, cardsToGet);
         }
-        return null;
+        return [];
     }
 
     /**

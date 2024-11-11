@@ -1,6 +1,6 @@
 import { AbilityContext } from '../core/ability/AbilityContext';
 import { Card } from '../core/card/Card';
-import { EventName } from '../core/Constants';
+import { EventName, GameStateChangeRequired } from '../core/Constants';
 import { IPlayerTargetSystemProperties, PlayerTargetSystem } from '../core/gameSystem/PlayerTargetSystem';
 import Player from '../core/Player';
 import { DiscardSpecificCardSystem } from './DiscardSpecificCardSystem';
@@ -33,13 +33,24 @@ export class DiscardFromDeckSystem<TContext extends AbilityContext = AbilityCont
         return ['discard ' + (properties.amount + (properties.amount > 1 ? ' cards' : ' card') + ' from deck'), []];
     }
 
-    public override canAffect(player: Player, context: TContext, additionalProperties = {}): boolean {
+    public override canAffect(player: Player, context: TContext, additionalProperties = {}, mustChangeGameState = GameStateChangeRequired.None): boolean {
         const properties = this.generatePropertiesFromContext(context, additionalProperties);
-        return properties.amount !== 0 && super.canAffect(player, context);
-    }
 
-    public override defaultTargets(context: TContext): Player[] {
-        return [context.player];
+        const availableDeck = player.drawDeck || []; // Without this | [], sometimes this is undefined, causing issues below
+
+        if (mustChangeGameState !== GameStateChangeRequired.None && (availableDeck.length === 0 || properties.amount === 0)) {
+            return false;
+        }
+
+        if ((properties.isCost || GameStateChangeRequired.MustFullyResolve) && availableDeck.length < properties.amount) {
+            return false;
+        }
+
+        if (!super.canAffect(player, context, additionalProperties)) {
+            return false;
+        }
+
+        return properties.amount !== 0 && super.canAffect(player, context);
     }
 
     protected override addPropertiesToEvent(event, player: Player, context: TContext, additionalProperties): void {
@@ -63,11 +74,7 @@ export class DiscardFromDeckSystem<TContext extends AbilityContext = AbilityCont
             }
 
             const topCards = player.getTopCardsOfDeck(amount);
-            if (Array.isArray(topCards)) {
-                topCards.forEach((card) => this.generateEventsForCard(card, context, events, additionalProperties));
-            } else if (topCards !== null) {
-                this.generateEventsForCard(topCards, context, events, additionalProperties);
-            }
+            topCards.forEach((card) => this.generateEventsForCard(card, context, events, additionalProperties));
 
             // Add a final event to convey overall event resolution status.
             events.push(this.generateEvent(context, additionalProperties));

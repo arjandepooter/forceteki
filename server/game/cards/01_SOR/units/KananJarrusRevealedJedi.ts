@@ -29,7 +29,6 @@ export default class KananJarrusRevealedJedi extends NonLeaderUnitCard {
 
     private getAspectCountFromEvents(events: any[]): number {
         const aspects = new Set<Aspect>();
-        // TODO: The event here doesn't have the Aspects
         const discardedCards = events.filter((event) => event.name === 'onCardDiscarded').map((event) => event.card);
         for (const card of discardedCards) {
             card.aspects.forEach((aspect) => aspects.add(aspect));
