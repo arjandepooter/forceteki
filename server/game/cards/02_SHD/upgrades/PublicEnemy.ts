@@ -17,7 +17,7 @@ export default class PublicEnemy extends UpgradeCard {
                 title: 'Give a Shield token to a unit.',
                 targetResolver: {
                     controller: RelativePlayer.Any,
-                    cardTypeFilter: [WildcardCardType.Unit],
+                    cardTypeFilter: WildcardCardType.Unit,
                     immediateEffect: AbilityHelper.immediateEffects.giveShield()
                 }
             }
