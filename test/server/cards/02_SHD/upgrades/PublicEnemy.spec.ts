@@ -10,7 +10,7 @@ describe('Public Enemy', function() {
                     player2: {
                         groundArena: [
                             { card: 'wampa', upgrades: ['public-enemy'] },
-                            { card: 'republic-tactical-officer' }
+                            { card: 'escort-skiff' }
                         ]
                     }
                 });
@@ -27,7 +27,7 @@ describe('Public Enemy', function() {
 
                 // Assigning shield to Battlefield Marine
                 expect(context.player1).toHavePassAbilityButton();
-                expect(context.player1).toBeAbleToSelectExactly([context.battlefieldMarine, context.atst, context.republicTacticalOfficer]);
+                expect(context.player1).toBeAbleToSelectExactly([context.battlefieldMarine, context.atst, context.escortSkiff]);
                 context.player1.clickCard(context.battlefieldMarine);
 
                 // Unit should have shield
