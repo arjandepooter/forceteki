@@ -29,6 +29,7 @@ const { DeckZone } = require('./zone/DeckZone');
 const { ResourceZone } = require('./zone/ResourceZone');
 const { DiscardZone } = require('./zone/DiscardZone');
 const { OutsideTheGameZone } = require('./zone/OutsideTheGameZone');
+const { BaseZone } = require('./zone/BaseZone');
 
 class Player extends GameObject {
     constructor(id, user, owner, game, clockDetails) {
@@ -54,16 +55,12 @@ class Player extends GameObject {
         this.handZone = new HandZone(this);
         this.deckZone = null;
         this.resourceZone = new ResourceZone(this);
-        this.spaceArena = [];
-        this.groundArena = [];
         this.discardZone = new DiscardZone(this);
         this.outsideTheGame = new OutsideTheGameZone(this);
         this.canTakeActionsThisPhase = null;
 
-        this.baseZone = [];
+        this.baseZone = null;
 
-        this.leader = null;
-        this.base = null;
         this.damageToBase = null;
 
         this.clock = clockFor(this, clockDetails);
@@ -516,14 +513,8 @@ class Player extends GameObject {
      */
     prepareDecks() {
         var preparedDecklist = new Deck(this.decklistNames).prepare(this);
-        if (preparedDecklist.base instanceof BaseCard) {
-            this.base = preparedDecklist.base;
-        }
-        if (preparedDecklist.leader instanceof LeaderUnitCard) {
-            this.leader = preparedDecklist.leader;
-        }
-
         this.deckZone = new DeckZone(this, preparedDecklist.deckCards);
+        this.baseZone = new BaseZone(this, preparedDecklist.base, preparedDecklist.leader);
         this.decklist = preparedDecklist;
     }
 
@@ -861,6 +852,14 @@ class Player extends GameObject {
 
     get drawDeck() {
         return this.deckZone.cards;
+    }
+
+    get leader() {
+        return this.baseZone.leader;
+    }
+
+    get base() {
+        return this.baseZone.base;
     }
 
     /**
