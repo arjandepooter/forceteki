@@ -30,7 +30,7 @@ describe('Reputable Hunter', function() {
                 const { context } = contextRef;
 
                 context.player1.clickCard(context.topTarget);
-                context.player1.clickCard(context.battlefieldMarine)
+                context.player1.clickCard(context.battlefieldMarine);
                 const exhaustedResourcesBeforePlay = context.player1.countExhaustedResources();
                 context.player2.passAction();
                 context.player1.clickCard(context.reputableHunter);
