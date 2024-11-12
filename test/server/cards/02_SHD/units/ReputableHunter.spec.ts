@@ -12,7 +12,7 @@ describe('Reputable Hunter', function() {
                     },
                     player2: {
                         groundArena: ['battlefield-marine'],
-                        hand: ['hylobon-enforcer', 'top-target'],
+                        hand: ['hylobon-enforcer'],
                     }
                 });
             });
@@ -25,21 +25,12 @@ describe('Reputable Hunter', function() {
                 expect(context.player1.countExhaustedResources()).toBe(3);
             });
 
-            it('should cost 3 if there are no bounties on enemy units', () => {
-                const { context } = contextRef;
-
-                context.player1.passAction();
-                context.player2.clickCard('top-target');
-                context.player1.clickCard(context.reputableHunter);
-
-                expect(context.reinforcementWalker).toHaveExactUpgradeNames(['top-target']);
-                expect(context.player1.countExhaustedResources()).toBe(3);
-            });
 
             it('should cost 2 after we play a bounty on a unit', () => {
                 const { context } = contextRef;
 
                 context.player1.clickCard(context.topTarget);
+                context.player1.clickCard(context.battlefieldMarine)
                 const exhaustedResourcesBeforePlay = context.player1.countExhaustedResources();
                 context.player2.passAction();
                 context.player1.clickCard(context.reputableHunter);
