@@ -6,6 +6,7 @@ describe('Reputable Hunter', function() {
                     phase: 'action',
                     player1: {
                         hand: ['reputable-hunter'],
+                        groundArena: ['hylobon-enforcer'],
                         base: 'energy-conversion-lab',
                     }
                 });
